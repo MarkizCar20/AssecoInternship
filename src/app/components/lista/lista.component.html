@@ -51,7 +51,7 @@
                 <th mat-header-cell *matHeaderCellDef> Category </th>
                 <td mat-cell *matCellDef="let element"> 
                     <div *ngIf="element.mcc; then thenBlock else elseBlock"></div>
-                    <ng-template #thenBlock><button mat-raised-button class="dugmence" (click)="onPress(element)">{{element.description}}</button></ng-template>
+                    <ng-template #thenBlock><button mat-raised-button class="dugmence" (click)="onPress(element)">{{element.mcc}}</button></ng-template>
                     <ng-template #elseBlock><button mat-raised-button class="dugmence" (click)="onPress(element)">Add Category</button></ng-template>
                     
                 </td>
@@ -84,7 +84,7 @@
     <mat-form-field appearance= "fill">
       <mat-label>Subcategory</mat-label>
       <mat-select>
-        <mat-option *ngFor="let category of childCategories" [value] = "category.name" >
+        <mat-option *ngFor="let category of childCategories" [value] = "category.name" (click)="getCode(category)">
           {{category.name}}
         </mat-option>
       </mat-select>

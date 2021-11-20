@@ -9,7 +9,7 @@ export class ListaService {
   constructor(private http: HttpClient) { }
   //https://jsonplaceholder.typicode.com/users
   public getTransactionList() {
-    return this.http.get("http://127.0.0.1:4010/transactions?transaction-kind=iure&start-date=1995-01-10T23%3A00%3A00.0Z&end-date=2021-03-03T23%3A00%3A00.0Z&page=502&page-size=415&sort-by=corporis&sort-order=desc")
+    return this.http.get("http://127.0.0.1:4010/transactions?transaction-kind=minima&start-date=2001-06-20T22%3A00%3A00.0Z&end-date=1947-08-06T23%3A00%3A00.0Z&page=405&page-size=429&sort-by=dicta&sort-order=asc")
   }
   
   public setTransaction(idbroj: number, parentID:string, childID:string) {

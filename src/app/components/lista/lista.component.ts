@@ -4,6 +4,7 @@ import { ListaService } from 'src/app/services/lista.service';
 import { MatSort, Sort, MatSortable } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatPaginator } from '@angular/material/paginator';
+import { TOUCH_BUFFER_MS } from '@angular/cdk/a11y/input-modality/input-modality-detector';
 
 interface IPost {
   id: number;
@@ -13,7 +14,7 @@ interface IPost {
   amount: string;
   description: string;
   currency: string;
-  mcc: number;
+  mcc: string;
   kind: string;
 }
 
@@ -69,7 +70,7 @@ export class ListaComponent implements OnInit {
       this.posts = lista.items;
       console.log(this.posts);
       this.dataSource = new MatTableDataSource(this.posts);
-      this.getTransactionCategories();
+      //this.getTransactionCategories();
      //this.dataSource.sort = this.sort;
     });
   }
@@ -120,10 +121,29 @@ export class ListaComponent implements OnInit {
 
   postChanges() {
     this.ListaService.setTransaction(this.chosenId, this.chosenCode, this.chosenParentCode);
+    let i1 = 0;
+    for (let i = 0; i < this.posts.length; i++) {
+      if ((this.posts.filter((e: IPost) => e.id == this.chosenId))) {
+        console.log("OVO JE PODATAK KADA NIJE PROMENJEN", this.posts[i]);
+        this.posts[i].mcc = this.chosenCode;
+        i1 = i;
+        console.log("OVO JE PROMENJEN PODATAK",this.posts[i]);
+      }
+    }
+    console.log("OVO JE PROMENJEN PODATAK",this.posts[i1]);
+
+    
+    
   }
 
   cancelChanges() {
     this.display = false;
+  }
+
+  getCode(kategorija: ICategory) {
+    this.chosenParentCode = kategorija.code;
+    this.chosenCode = kategorija['parent-code'];
+    console.log(this.chosenParentCode);
   }
 
 }

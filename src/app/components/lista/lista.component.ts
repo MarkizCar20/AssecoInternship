@@ -16,6 +16,7 @@ interface IPost {
   currency: string;
   mcc: string;
   kind: string;
+  split: boolean;
 }
 
 interface ICategory {
@@ -23,8 +24,8 @@ interface ICategory {
   "parent-code": string;
   code: string;
   name: string;
-}
 
+}
 
 @Component({
   selector: 'app-lista',
@@ -42,12 +43,26 @@ export class ListaComponent implements OnInit {
   public chosenParentCode: string = "";
   public chosenIDs: number[] = [];
 
+  public chosenSplitCodes: string[] = [];
+  public chosenSplitParentCodes: string[] = [];
+  public hasSplits = false;
+  public chosenSplitNames: string[] = [];
+
   public dataSource = new MatTableDataSource<IPost>();
   public posts: IPost[] = [];
   public getTableData: IPost[] = [];
   public displayedColumns: string[] = ['select', 'id', 'beneficiary-name', 'date', 'direction', 'amount', 'currency', 'kind', 'splitMarker', 'mcc']
   public dataString = "";
   public parentArray: ICategory[] = [];
+  public noviParentArray: ICategory[] = [];
+  public chosenName: string = "";
+
+  public value_form: number[] = [];
+
+  public listaKategorija: any[] = [{
+    id: 1, 
+    listaKategorija1: this.noviParentArray
+  }];
 
   selection = new SelectionModel<IPost>(true, []);
   
@@ -59,6 +74,7 @@ export class ListaComponent implements OnInit {
    }
 
    display = false;
+   splitdisplay = false;
    onPress(ielement: IPost) {
      this.display = true;
      console.log(ielement);
@@ -94,13 +110,14 @@ export class ListaComponent implements OnInit {
     });
   }
 
-  getSubcategory(code: string) {
+  getSubcategory(kategorija: ICategory) {
 
-    console.log(code);
-    const y = this.categories.items.filter((e : ICategory) => e["parent-code"] == code);
-    this.chosenParentCode = code;
+    console.log(kategorija.code);
+    const y = this.categories.items.filter((e : ICategory) => e["parent-code"] == kategorija.code);
+    this.chosenParentCode = kategorija.code;
     this.childCategories = y;
-
+    this.chosenName = kategorija.name;
+    console.log(this.listaKategorija);
   }
 
   
@@ -125,7 +142,7 @@ export class ListaComponent implements OnInit {
       for (let item of this.selection.selected) {
         if (this.posts[i].id == item.id) {
           console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
-          this.posts[i].mcc = this.chosenCode;
+          this.posts[i].mcc = this.chosenName;
         }
       }
     }
@@ -135,12 +152,12 @@ export class ListaComponent implements OnInit {
     for (let i = 0; i < this.posts.length; i++) {
         if (this.posts[i].id == this.chosenId) {
           console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
-          this.posts[i].mcc = this.chosenCode;
+          this.posts[i].mcc = this.chosenName;
         }
     }
 
     }
-    
+    this.display = false;
   }
 
   cancelChanges() {
@@ -153,6 +170,7 @@ export class ListaComponent implements OnInit {
     this.chosenParentCode = kategorija.code;
     this.chosenCode = kategorija['parent-code'];
     console.log(this.chosenParentCode);
+    
   }
 
 
@@ -181,6 +199,89 @@ export class ListaComponent implements OnInit {
     
   }
 
+  onPressSplit(elem: IPost) {
+    if (this.splitdisplay == false) this.splitdisplay = true;
+    this.getTransactionCategories();
+    this.listaKategorija.push({
+      id: this.listaKategorija.length +1,
+      listaKategorija1: this.parentArray});
+  }
+
+  removeSplit(i:number) {
+    this.listaKategorija.splice(i, 1);
+  }
+
+  addSplit(i:number) {
+    this.listaKategorija.push({
+      id: this.listaKategorija.length +1,
+      listaKategorija1: this.parentArray});
+      
+  }
+
+  onSubmit() {
+    console.log(this.value_form);
+  }
+
+
+  cancelSplitChanges() {
+    this.splitdisplay= false;
+    this.chosenId = 0;
+    this.chosenParentCode = this.chosenCode = "";
+  }
+
+  postSplitChanges() {
+
+    console.log("_ASDASDSA", this.value_form);
+    console.log(this.selection.selected.length != 0);
+    if (this.selection.selected.length != 0) {
+      for (let item of this.selection.selected) {
+        console.log(item.id);
+        this.chosenIDs.push(item.id);
+      }
+      this.ListaService.setTransaction(this.chosenIDs, this.chosenCode, this.chosenParentCode);
+    for (let i = 0; i < this.posts.length; i++) {
+      for (let item of this.selection.selected) {
+        if (this.posts[i].id == item.id) {
+          console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
+          this.posts[i].mcc = this.chosenName;
+        }
+      }
+    }
+    }
+    else {
+      this.ListaService.setTransaction(this.chosenIDs, this.chosenCode, this.chosenParentCode);
+    for (let i = 0; i < this.posts.length; i++) {
+        if (this.posts[i].id == this.chosenId) {
+          console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
+          this.posts[i].mcc = this.chosenName;
+        }
+    }
+
+    }
+    this.splitdisplay = false;
+    
+  }
+
+  getSplitCode(kategorija: ICategory) {
+    
+    this.chosenSplitParentCodes.push(kategorija['parent-code']); 
+    console.log("izabran Parent Code", this.chosenSplitParentCodes);
+
+    this.hasSplits = true;
+    
+  }
+
+
+  getSplitSubcategory(kategorija: ICategory) {
+
+    console.log( "OVDE TREBA DA NADJE KATEGORIJU", kategorija.code);
+    const y = this.categories.items.filter((e : ICategory) => e["parent-code"] == kategorija.code);
+    this.childCategories = y;
+    console.log("provera da li ovo uopste radi?", y);
+    this.chosenSplitCodes.push(y.code);
+    this.chosenSplitNames.push(kategorija.name);
+    console.log("izabran Code", this.chosenSplitCodes);
+  }
 }
 
 

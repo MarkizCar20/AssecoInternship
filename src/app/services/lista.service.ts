@@ -36,7 +36,7 @@ export class ListaService {
   public updateTransaction() {
     //
   }
-
+  
   public getCategories() {
     return this.http.get(" http://127.0.0.1:4010/categories?parent-id=sed");
   }

@@ -61,7 +61,7 @@
               <ng-container matColumnDef="splitMarker">
                 <th mat-header-cell *matHeaderCellDef> Split Marker </th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-raised-button class="dugmence">Split Transaction</button>
+                 <button mat-raised-button class="dugmence" (click)="onPressSplit(element)">Add split</button>
                 </td>
               </ng-container>
         
@@ -91,7 +91,7 @@
   <mat-form-field appearance="fill">
     <mat-label>Category</mat-label>
     <mat-select>
-      <mat-option *ngFor="let category of parentArray" (click)="getSubcategory(category.code)"
+      <mat-option *ngFor="let category of parentArray" (click)="getSubcategory(category)"
                   [value] = "category.name">
         {{category.name}}
       </mat-option>
@@ -111,7 +111,55 @@
   <button (click)= "postChanges()">Add Categories.</button>
   <button (click)= "cancelChanges()">Discard.</button>
 </div>
-  
+
+
+<div id="split-dropdown-menu" *ngIf="splitdisplay" class="split-meni">
+    <!-- some code here - see full code at the end of this tutorial -->
+     <section *ngFor="let lista of listaKategorija; let i = index;">
+      <div><button type="button" class="btn btn-danger btn-sm" (click)="removeSplit(i)">Remove Split</button></div>
+        <label>Category</label>
+        <mat-form-field appearance="fill">
+          <mat-label>Category</mat-label>
+          <mat-select name = "lista.id">
+            <mat-option *ngFor="let category of parentArray" (click)="getSplitSubcategory(category)" 
+                        [value] = "category.name">
+              {{category.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <mat-form-field >
+            <mat-label>Enter split ammount</mat-label>
+              <input matInput [(ngModel)] = "value_form">
+          </mat-form-field>
+        </div>
+        <div>
+          <h4>Subcategory</h4>
+          <mat-form-field appearance= "fill">
+            <mat-label>Subcategory</mat-label>
+            <mat-select name = "lista.id">
+              <mat-option *ngFor="let category of childCategories" [value] = "category.name" (click)="getSplitCode(category)">
+                {{category.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div> 
+        <div>
+          <mat-form-field (submit)= "onSubmit()">
+            <mat-label>Enter split ammount</mat-label>
+              <input matInput [(ngModel)] = value_form>
+          </mat-form-field>
+        </div>
+       <div><button type="button" (click)="addSplit(i)">Add Split</button></div>
+     </section>
+  <div>
+    
+  </div>
+  <div></div>
+
+  <button (click)= "postSplitChanges()">Split the ammount.</button>
+  <button (click)= "cancelSplitChanges()">Discard.</button>
+</div>
   
 <!-- <mat-selection-list >
   <mat-list-option *ngFor="let category of parentArray">

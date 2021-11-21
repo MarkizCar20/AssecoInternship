@@ -18,7 +18,8 @@ import { MatInputModule} from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
-import { MatCheckboxModule} from '@angular/material/checkbox'
+import { MatCheckboxModule} from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { MatCheckboxModule} from '@angular/material/checkbox'
     MatSelectModule,
     MatOptionModule,
     MatListModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    FormsModule
 
   ],
   providers: [],

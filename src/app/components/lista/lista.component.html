@@ -1,10 +1,28 @@
 <mat-card class="user-card" >
     <mat-card-header class="user-card">
-      <mat-card-title class = "heder1 ">Lista Transakcija</mat-card-title>
+      <mat-card-title>Lista Transakcija</mat-card-title>
     </mat-card-header>
     <mat-card-content >
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z0 user-table" class = "content-text" matSort matSortStart = "desc">
           
+          
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                            [aria-label]="checkboxLabel()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                            [aria-label]="checkboxLabel(row)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
             <ng-container matColumnDef="id" class="prvi-red">
               <th mat-header-cell *matHeaderCellDef> Transaction ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>

@@ -13,12 +13,12 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { CategorizeComponent } from './components/categorize/categorize.component';
-import {  MatFormFieldModule } from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule} from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import {MatListModule} from '@angular/material/list';
-
+import { MatListModule } from '@angular/material/list';
+import { MatCheckboxModule} from '@angular/material/checkbox'
 
 @NgModule({
   declarations: [
@@ -41,7 +41,9 @@ import {MatListModule} from '@angular/material/list';
     MatInputModule,
     MatSelectModule,
     MatOptionModule,
-    MatListModule
+    MatListModule,
+    MatCheckboxModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

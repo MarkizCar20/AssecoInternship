@@ -4,7 +4,7 @@ import { ListaService } from 'src/app/services/lista.service';
 import { MatSort, Sort, MatSortable } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatPaginator } from '@angular/material/paginator';
-import { TOUCH_BUFFER_MS } from '@angular/cdk/a11y/input-modality/input-modality-detector';
+import {SelectionModel} from '@angular/cdk/collections';
 
 interface IPost {
   id: number;
@@ -40,13 +40,16 @@ export class ListaComponent implements OnInit {
   public chosenId = 0;
   public chosenCode: string = "";
   public chosenParentCode: string = "";
+  public chosenIDs: number[] = [];
 
   public dataSource = new MatTableDataSource<IPost>();
   public posts: IPost[] = [];
-  public displayedColumns: string[] = ['id', 'beneficiary-name', 'date', 'direction', 'amount', 'currency', 'kind', 'splitMarker', 'mcc']
+  public getTableData: IPost[] = [];
+  public displayedColumns: string[] = ['select', 'id', 'beneficiary-name', 'date', 'direction', 'amount', 'currency', 'kind', 'splitMarker', 'mcc']
   public dataString = "";
-  //public dataSource = new MatTableDataSource();
   public parentArray: ICategory[] = [];
+
+  selection = new SelectionModel<IPost>(true, []);
   
   @ViewChild(MatSort, {static: true}) sort!: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
@@ -66,12 +69,9 @@ export class ListaComponent implements OnInit {
   
   ngOnInit(): void {
     this.ListaService.getTransactionList().subscribe((lista:any) => {
-      //this.dataSource.sort= this.sort
       this.posts = lista.items;
       console.log(this.posts);
       this.dataSource = new MatTableDataSource(this.posts);
-      //this.getTransactionCategories();
-     //this.dataSource.sort = this.sort;
     });
   }
 
@@ -81,7 +81,6 @@ export class ListaComponent implements OnInit {
      this.dataSource.paginator = this.paginator;
     });
     
-    //Object.filter(element => element.parent == "");
   }
 
   getTransactionCategories() {
@@ -98,19 +97,14 @@ export class ListaComponent implements OnInit {
   getSubcategory(code: string) {
 
     console.log(code);
-    // console.log(this.categories.items);
     const y = this.categories.items.filter((e : ICategory) => e["parent-code"] == code);
     this.chosenParentCode = code;
     this.childCategories = y;
 
   }
 
-  /** Announce the change in sort state for assistive technology. */
+  
   announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
     if (sortState.direction) {
       this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
     } else {
@@ -120,30 +114,71 @@ export class ListaComponent implements OnInit {
 
 
   postChanges() {
-    this.ListaService.setTransaction(this.chosenId, this.chosenCode, this.chosenParentCode);
-    let i1 = 0;
+    console.log(this.selection.selected.length != 0);
+    if (this.selection.selected.length != 0) {
+      for (let item of this.selection.selected) {
+        console.log(item.id);
+        this.chosenIDs.push(item.id);
+      }
+      this.ListaService.setTransaction(this.chosenIDs, this.chosenCode, this.chosenParentCode);
     for (let i = 0; i < this.posts.length; i++) {
-      if ((this.posts.filter((e: IPost) => e.id == this.chosenId))) {
-        console.log("OVO JE PODATAK KADA NIJE PROMENJEN", this.posts[i]);
-        this.posts[i].mcc = this.chosenCode;
-        i1 = i;
-        console.log("OVO JE PROMENJEN PODATAK",this.posts[i]);
+      for (let item of this.selection.selected) {
+        if (this.posts[i].id == item.id) {
+          console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
+          this.posts[i].mcc = this.chosenCode;
+        }
       }
     }
-    console.log("OVO JE PROMENJEN PODATAK",this.posts[i1]);
+    }
+    else {
+      this.ListaService.setTransaction(this.chosenIDs, this.chosenCode, this.chosenParentCode);
+    for (let i = 0; i < this.posts.length; i++) {
+        if (this.posts[i].id == this.chosenId) {
+          console.log("Ovde ce se promeniti samo taj jedan podatak.", this.posts[i]);
+          this.posts[i].mcc = this.chosenCode;
+        }
+    }
 
-    
+    }
     
   }
 
   cancelChanges() {
     this.display = false;
+    this.chosenId = 0;
+    this.chosenParentCode = this.chosenCode = "";
   }
 
   getCode(kategorija: ICategory) {
     this.chosenParentCode = kategorija.code;
     this.chosenCode = kategorija['parent-code'];
     console.log(this.chosenParentCode);
+  }
+
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: IPost): any {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+    
   }
 
 }

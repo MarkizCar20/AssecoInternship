@@ -1,10 +1,9 @@
 <mat-card class="user-card" >
-    <mat-card-header class="user-card">
+    <mat-card-header class="listHeader">
       <mat-card-title>Lista Transakcija</mat-card-title>
     </mat-card-header>
-    <mat-card-content >
+    <mat-card-content class="tabela">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z0 user-table" class = "content-text" matSort matSortStart = "desc">
-          
           
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>
@@ -86,7 +85,7 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
 
-          <mat-paginator
+          <mat-paginator class="paginator"
                 [pageSizeOptions]="[5, 10, 20]"
                  showFirstLastButtons 
                  aria-label="Select the number of transactions">
